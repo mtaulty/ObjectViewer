@@ -7,18 +7,26 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectViewer", "ObjectViewe
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
 		Debug|ARM64 = Debug|ARM64
 		Debug|x64 = Debug|x64
+		Release|ARM = Release|ARM
 		Release|ARM64 = Release|ARM64
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Debug|ARM.ActiveCfg = Debug|ARM
+		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Debug|ARM.Build.0 = Debug|ARM
+		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Debug|ARM.Deploy.0 = Debug|ARM
 		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Debug|ARM64.ActiveCfg = Debug|ARM64
 		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Debug|ARM64.Build.0 = Debug|ARM64
 		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Debug|ARM64.Deploy.0 = Debug|ARM64
 		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Debug|x64.ActiveCfg = Debug|x64
 		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Debug|x64.Build.0 = Debug|x64
 		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Debug|x64.Deploy.0 = Debug|x64
+		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Release|ARM.ActiveCfg = Release|ARM
+		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Release|ARM.Build.0 = Release|ARM
+		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Release|ARM.Deploy.0 = Release|ARM
 		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Release|ARM64.ActiveCfg = Release|ARM64
 		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Release|ARM64.Build.0 = Release|ARM64
 		{5052C0AD-FC7C-45E2-BF11-E809BC4F8407}.Release|ARM64.Deploy.0 = Release|ARM64
