@@ -1,5 +1,5 @@
-﻿using ObjectViewer.BindingFramework;
-using ObjectViewer.Views;
+﻿using Autofac;
+using ObjectViewer.BindingFramework;
 using StereoKit;
 
 namespace ObjectViewer.Views
@@ -9,14 +9,12 @@ namespace ObjectViewer.Views
         public Notifiable<Pose> Pose { get; set; } = new Notifiable<Pose>();
         public Notifiable<float> Size { get; set; } = new Notifiable<float>();
 
-        public CubeView()
+        public CubeView(IComponentContext componentConext) : base (componentConext)
         {
         }
         public override void Initialise()
         {
-            this.cube = Model.FromMesh(
-                Mesh.GenerateRoundedCube(Vec3.One * this.Size.Value, 0.02f),
-                Default.MaterialUI);
+            this.cube = Model.FromMesh(Mesh.GenerateCube(Vec3.One * this.Size.Value),Default.MaterialUI);
         }
         public override void Draw()
         {

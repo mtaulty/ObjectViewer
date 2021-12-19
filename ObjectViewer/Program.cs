@@ -1,9 +1,10 @@
-using ObjectViewer.Drawables;
-using ObjectViewer.Interfaces;
+using Autofac;
+using ObjectViewer.Extensions;
+using ObjectViewer.Services.Definitions;
+using ObjectViewer.Services.Implementation;
 using ObjectViewer.Views;
 using StereoKit;
 using System;
-using System.Collections.Generic;
 
 namespace ObjectViewer.ViewModels
 {
@@ -11,13 +12,14 @@ namespace ObjectViewer.ViewModels
     {
         static void Main(string[] args)
         {
-            Initialise();
+            StereoKitInitialise();
+            ContainerInitialise();
 
             Draw();
 
             SK.Shutdown();
         }
-        static void Initialise()
+        static void StereoKitInitialise()
         {
             // Initialize StereoKit
             SKSettings settings = new SKSettings
@@ -31,39 +33,34 @@ namespace ObjectViewer.ViewModels
                 Environment.Exit(1);
             }
         }
+        static void ContainerInitialise()
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterType<PlatformService>().As<IPlatformService>().SingleInstance();
+            builder.RegisterType<CubeViewModel>().Named<object>(nameof(CubeViewModel));
+            builder.RegisterType<FloorViewModel>().Named<object>(nameof(FloorViewModel));
+            builder.RegisterType<CubeView>().AsSelf();
+            builder.RegisterType<FloorView>().AsSelf();
+            container = builder.Build();
+        }
         static void Draw()
         {
-            var cubeView = new CubeView();
-            var viewModel = new CubeViewModel();
-            cubeView.ViewModel.SetValue(viewModel);
-
             var drawables = new IDrawable[]
             {
-                new Floor(),
-                cubeView
+                container.Resolve<FloorView>(),
+                container.Resolve<CubeView>()
             };
 
-            ConditionalForAll(drawables, d => d.Initialise());
+            drawables.ForAll(d => d.Initialise());
 
             while (SK.Step(
-                () =>
-                    {
-                        ConditionalForAll(drawables, d => d.Draw());
-                    }
+                () => 
+                {
+                    drawables.ForAll(d => d.Draw());
+                }
                 )
             ) ;
         }
-        static void ConditionalForAll<T>(IEnumerable<T> list, Action<T> action)
-        {
-            foreach (var item in list)
-            {
-                var condition = item as IConditional;
-
-                if ((condition == null) || condition.IsTrue)
-                {
-                    action(item);
-                }
-            }
-        }
+        static IContainer container;
     }
 }

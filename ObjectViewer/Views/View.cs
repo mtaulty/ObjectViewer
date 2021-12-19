@@ -1,4 +1,5 @@
-﻿using ObjectViewer.BindingFramework;
+﻿using Autofac;
+using ObjectViewer.BindingFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +9,18 @@ namespace ObjectViewer.Views
 {
     class View : IDrawable
     {
-        public View()
+        [BindingHidden]
+        public Notifiable<object> ViewModel { get; }
+
+        public View(IComponentContext componentContext)
         {
             this.bindings = new List<IBinding>();
             this.ViewModel = new Notifiable<object>();
             this.ViewModel.Changed += this.OnViewModelChanged;
+            this.ViewModel.SetValue(componentContext.ResolveNamed(this.ViewModelName, typeof(object)));
         }
+        protected string ViewModelName => this.GetType().Name + "Model";
+
         void OnViewModelChanged(object sender, ChangeNotificationEventArgs<object> e)
         {
             if (e.OldValue != null)
@@ -83,8 +90,6 @@ namespace ObjectViewer.Views
         public virtual void Draw()
         {
         }
-        [BindingHidden]
-        public Notifiable<object> ViewModel { get; }
 
         List<IBinding> bindings;
     }
