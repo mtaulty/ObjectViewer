@@ -1,11 +1,23 @@
+using ObjectViewer.Drawables;
+using ObjectViewer.Interfaces;
+using ObjectViewer.Views;
 using StereoKit;
 using System;
+using System.Collections.Generic;
 
-namespace ObjectViewer
+namespace ObjectViewer.ViewModels
 {
     internal class Program
     {
         static void Main(string[] args)
+        {
+            Initialise();
+
+            Draw();
+
+            SK.Shutdown();
+        }
+        static void Initialise()
         {
             // Initialize StereoKit
             SKSettings settings = new SKSettings
@@ -13,31 +25,45 @@ namespace ObjectViewer
                 appName = "ObjectViewer",
                 assetsFolder = "Assets",
             };
+
             if (!SK.Initialize(settings))
-                Environment.Exit(1);
-
-
-            // Create assets used by the app
-            Pose cubePose = new Pose(0, 0, -0.5f, Quat.Identity);
-            Model cube = Model.FromMesh(
-                Mesh.GenerateRoundedCube(Vec3.One * 0.1f, 0.02f),
-                Default.MaterialUI);
-
-            Matrix floorTransform = Matrix.TS(0, -1.5f, 0, new Vec3(30, 0.1f, 30));
-            Material floorMaterial = new Material(Shader.FromFile("floor.hlsl"));
-            floorMaterial.Transparency = Transparency.Blend;
-
-
-            // Core application loop
-            while (SK.Step(() =>
             {
-                if (SK.System.displayType == Display.Opaque)
-                    Default.MeshCube.Draw(floorMaterial, floorTransform);
+                Environment.Exit(1);
+            }
+        }
+        static void Draw()
+        {
+            var cubeView = new CubeView();
+            var viewModel = new CubeViewModel();
+            cubeView.ViewModel.SetValue(viewModel);
 
-                UI.Handle("Cube", ref cubePose, cube.Bounds);
-                cube.Draw(cubePose.ToMatrix());
-            })) ;
-            SK.Shutdown();
+            var drawables = new IDrawable[]
+            {
+                new Floor(),
+                cubeView
+            };
+
+            ConditionalForAll(drawables, d => d.Initialise());
+
+            while (SK.Step(
+                () =>
+                    {
+                        ConditionalForAll(drawables, d => d.Draw());
+                    }
+                )
+            ) ;
+        }
+        static void ConditionalForAll<T>(IEnumerable<T> list, Action<T> action)
+        {
+            foreach (var item in list)
+            {
+                var condition = item as IConditional;
+
+                if ((condition == null) || condition.IsTrue)
+                {
+                    action(item);
+                }
+            }
         }
     }
 }
