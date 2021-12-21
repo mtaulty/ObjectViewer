@@ -6,19 +6,22 @@ namespace ObjectViewer.Views
 {
     internal class CubeView : View
     {
+        [BindingPropertyName("Foo")]
         public Notifiable<Pose> Pose { get; set; } = new Notifiable<Pose>();
+
+        [BindingPropertyName("Bar")]
         public Notifiable<float> Size { get; set; } = new Notifiable<float>();
 
         public CubeView(IComponentContext componentConext) : base (componentConext)
         {
         }
-        public override void Initialise()
+        public override void Initialise(IComponentContext componentContext)
         {
-            this.cube = Model.FromMesh(Mesh.GenerateCube(Vec3.One * this.Size.Value),Default.MaterialUI);
+            this.cube = Model.FromMesh(Mesh.GenerateCube(Vec3.One * this.Size),Default.MaterialUI);
         }
         public override void Draw()
         {
-            Pose pose = this.Pose.Value;
+            Pose pose = this.Pose;
 
             if (UI.Handle("Cube", ref pose, this.cube.Bounds))
             {

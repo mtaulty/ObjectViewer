@@ -11,7 +11,7 @@ namespace ObjectViewer.Views
         public FloorView(IComponentContext componentContext) : base(componentContext)
         {
         }
-        public override void Initialise()
+        public override void Initialise(IComponentContext componentContext)
         {
             if (this.DrawFloor.Value)
             {
