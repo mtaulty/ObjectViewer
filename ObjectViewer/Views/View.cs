@@ -4,46 +4,39 @@ using System.Collections.Generic;
 
 namespace ObjectViewer.Views
 {
-    class View
+    internal abstract class View
     {
         [BindingHidden]
         public Notifiable<object> ViewModel { get; }
+
+        protected IComponentContext ComponentContext => this.componentContext;
 
         protected List<IBinding> Bindings { get; set; }
 
         public View(IComponentContext componentContext)
         {
+            this.componentContext = componentContext;
             this.Bindings = new List<IBinding>();
             this.ViewModel = new Notifiable<object>();
             this.ViewModel.Changed += this.OnViewModelChanged;
-            this.Initialise(componentContext);
-            this.LocateDirectViewModel(componentContext);
+            this.Initialise();
+            this.LocateDirectViewModel();
             this.CreateBindings();
         }
-        public virtual void Initialise(IComponentContext componentContext)
+        public virtual void Initialise()
         {
         }
         public virtual void InitialiseResources()
         {
         }
-        public virtual void Draw()
-        {
-        }
-        public virtual void BeginDraw()
-        {
-
-        }
-        public virtual void EndDraw()
-        {
-
-        }
+        public abstract void Draw();
         protected virtual string ViewModelName => this.GetType().Name + "Model";
 
-        protected virtual void LocateDirectViewModel(IComponentContext componentContext)
+        protected virtual void LocateDirectViewModel()
         {
             if (componentContext.IsRegisteredWithName<object>(this.ViewModelName))
             {
-                this.ViewModel.SetValue(componentContext.ResolveNamed<object>(this.ViewModelName));
+                this.ViewModel.SetValue(this.componentContext.ResolveNamed<object>(this.ViewModelName));
             }
         }
         protected virtual void OnViewModelChanged(object sender, ChangeNotificationEventArgs<object> e)
@@ -76,5 +69,6 @@ namespace ObjectViewer.Views
             }
             this.Bindings.Clear();
         }
+        IComponentContext componentContext;
     }
 }

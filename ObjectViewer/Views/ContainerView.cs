@@ -5,13 +5,13 @@ using System.Collections.Generic;
 
 namespace ObjectViewer.Views
 {
-    internal class ContainerView : View
+    internal abstract class ContainerView : View
     {
         protected Dictionary<string, View> Children { get; set; }
         public ContainerView(IComponentContext componentContext) : base(componentContext)
         {
         }
-        protected void AddChildView(string viewName, View view)
+        protected virtual void AddChildView(string viewName, View view)
         {
             if (this.Children == null)
             {
@@ -27,20 +27,23 @@ namespace ObjectViewer.Views
             }
             this.Children[viewName] = view;
         }
-        public override void Initialise(IComponentContext componentContext)
+        public override void Initialise()
         {
-            this.Children.ForAll(child => child.Value.Initialise(componentContext));
+            this.Children.ForAll(child => child.Value.Initialise());
         }
+        protected abstract void BeginDraw();
+        protected abstract void EndDraw();
         public override void Draw()
         {
+            this.BeginDraw();
+
             this.Children.ForAll(
                 child =>
                 {
-                    child.Value.BeginDraw();
                     child.Value.Draw();
-                    child.Value.EndDraw();
                 }
             );
+            this.EndDraw();
         }
     }
 }

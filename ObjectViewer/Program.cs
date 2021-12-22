@@ -44,25 +44,14 @@ namespace ObjectViewer.ViewModels
         }
         static void Draw()
         {
-            var drawables = new View[]
+            var views = new View[]
             {
                 container.Resolve<WindowView>()
             };
 
-            drawables.ForAll(d => d.InitialiseResources());
+            views.ForAll(d => d.InitialiseResources());
 
-            while (SK.Step(
-                () =>
-                {
-                    drawables.ForAll(d =>
-                        {
-                            d.BeginDraw();
-                            d.Draw();
-                            d.EndDraw();
-                        }
-                    );
-                }
-            )) ;
+            while (SK.Step(() => views.ForAll(d => d.Draw()))) ;
         }
         static IContainer container;
     }

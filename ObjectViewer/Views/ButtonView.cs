@@ -18,13 +18,12 @@ namespace ObjectViewer.Views
             this.Position.SetValue(Vec3.Zero);
             this.Size.SetValue(Vec2.Zero);
         }
-        public override void Initialise(IComponentContext componentContext)
+        public override void Initialise()
         {
-            base.Initialise(componentContext);
+            base.Initialise();
         }
         public override void Draw()
         {
-            base.Draw();
             UI.ButtonAt(this.Text, this.Position, this.Size);
         }
     }

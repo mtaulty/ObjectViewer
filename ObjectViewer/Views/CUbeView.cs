@@ -15,7 +15,7 @@ namespace ObjectViewer.Views
         public CubeView(IComponentContext componentConext) : base (componentConext)
         {
         }
-        public override void Initialise(IComponentContext componentContext)
+        public override void Initialise()
         {
             this.cube = Model.FromMesh(Mesh.GenerateCube(Vec3.One * this.Size),Default.MaterialUI);
         }

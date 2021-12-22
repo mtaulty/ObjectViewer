@@ -13,9 +13,13 @@ namespace ObjectViewer.ViewModels
         public WindowViewModel()
         {
             this.Title.SetValue("Window Title");
-            this.Pose.SetValue(new Pose(new Vec3(0, 0, -0.5f), Quat.Identity));
-            this.Size.SetValue(new Vec2(0.1f, 0.1f));
+
+            this.Pose.SetValue(new Pose(new Vec3(0, 0, -0.5f), Quat.LookAt(new Vec3(0, 0, -0.5f), new Vec3(0, 0, 0))));
+
+            this.Size.SetValue(new Vec2(0.8f, 0.4f));
+            
             this.WindowType.SetValue(UIWin.Normal);
+            
             this.MoveType.SetValue(UIMove.FaceUser);
         }
     }

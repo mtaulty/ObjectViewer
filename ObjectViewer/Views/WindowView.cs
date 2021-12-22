@@ -15,23 +15,21 @@ namespace ObjectViewer.Views
         public WindowView(IComponentContext componentContext) : base(componentContext)
         {
         }
-        public override void Initialise(IComponentContext componentContext)
+        public override void Initialise()
         {
-            base.AddChildView("OKBtn", componentContext.Resolve<ButtonView>());
-            base.AddChildView("CancelBtn", componentContext.Resolve<ButtonView>());
-            base.Initialise(componentContext);
+            base.AddChildView("OKBtn", base.ComponentContext.Resolve<ButtonView>());
+            base.AddChildView("CancelBtn", base.ComponentContext.Resolve<ButtonView>());
+            base.Initialise();
         }
-        public override void BeginDraw()
+        protected override void BeginDraw()
         {
-            base.BeginDraw();
             Pose pose = this.Pose;
             UI.WindowBegin(this.Title, ref pose, this.Size, this.WindowType, this.MoveType);
             this.Pose.SetValue(pose);
         }
-        public override void EndDraw()
+        protected override void EndDraw()
         {
             UI.WindowEnd();
-            base.EndDraw();
         }
     }
 }
