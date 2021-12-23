@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using ObjectViewer.BindingFramework;
 using StereoKit;
-using System.Net.NetworkInformation;
 
 namespace ObjectViewer.Views
 {

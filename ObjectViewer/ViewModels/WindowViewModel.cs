@@ -10,6 +10,12 @@ namespace ObjectViewer.ViewModels
         public Notifiable<Vec2> Size { get; set; } = new Notifiable<Vec2>();
         public Notifiable<UIWin> WindowType { get; set; } = new Notifiable<UIWin>();
         public Notifiable<UIMove> MoveType { get; set; } = new Notifiable<UIMove>();
+
+        [BindsTo("OKBtn/Text")]
+        public Notifiable<string> Prop1 { get; set; } = new Notifiable<string>();
+        [BindsTo("CancelBtn/Text")]
+        public Notifiable<string> Prop2 { get; set; } = new Notifiable<string>();
+
         public WindowViewModel()
         {
             this.Title.SetValue("Window Title");

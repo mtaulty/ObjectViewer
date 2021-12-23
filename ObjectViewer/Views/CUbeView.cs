@@ -6,10 +6,10 @@ namespace ObjectViewer.Views
 {
     internal class CubeView : View
     {
-        [BindingPropertyName("Foo")]
+        [BindsAs("Foo")]
         public Notifiable<Pose> Pose { get; set; } = new Notifiable<Pose>();
 
-        [BindingPropertyName("Bar")]
+        [BindsAs("Bar")]
         public Notifiable<float> Size { get; set; } = new Notifiable<float>();
 
         public CubeView(IComponentContext componentConext) : base (componentConext)

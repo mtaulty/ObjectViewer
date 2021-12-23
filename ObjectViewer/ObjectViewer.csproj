@@ -71,11 +71,12 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BindingFramework\Attributes\BindsAttribute.cs" />
     <Compile Include="BindingFramework\Binding.cs" />
     <Compile Include="BindingFramework\BindingFactory.cs" />
     <Compile Include="BindingFramework\Attributes\BindingHiddenAttribute.cs" />
-    <Compile Include="BindingFramework\Attributes\BindingPropertyNameAttribute.cs" />
-    <Compile Include="BindingFramework\Attributes\BindingSourcePropertyAttribute.cs" />
+    <Compile Include="BindingFramework\Attributes\BindsAsAttribute.cs" />
+    <Compile Include="BindingFramework\Attributes\BindsToAttribute.cs" />
     <Compile Include="BindingFramework\ChangeNotificationEventArgs.cs" />
     <Compile Include="Extensions\ForAll.cs" />
     <Compile Include="Services\Definitions\IPlatformService.cs" />

@@ -5,9 +5,9 @@ namespace ObjectViewer.ViewModels
 {
     internal class CubeViewModel
     {
-        [BindingSourceProperty("Foo")]
+        [BindsTo("Foo")]
         public Notifiable<Pose> CubePose { get; set; } = new Notifiable<Pose>();
-        [BindingSourceProperty("Bar")]
+        [BindsTo("Bar")]
         public Notifiable<float> CubeSize { get; set; } = new Notifiable<float>();
 
         public CubeViewModel()
