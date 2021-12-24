@@ -16,6 +16,7 @@ namespace ObjectViewer.Views
             this.Text.SetValue("Default");
             this.Position.SetValue(Vec3.Zero);
             this.Size.SetValue(Vec2.Zero);
+            this.IsRound.SetValue(false);
         }
         public override void Initialise()
         {

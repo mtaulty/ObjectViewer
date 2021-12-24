@@ -4,7 +4,7 @@ using StereoKit;
 
 namespace ObjectViewer.Views
 {
-    internal class WindowView : ContainerView
+    internal class WindowViewExperiment : ContainerView
     {
         public Notifiable<string> Title { get; set; } = new Notifiable<string>();
         public Notifiable<Pose> Pose { get; set; } = new Notifiable<Pose>();
@@ -12,7 +12,7 @@ namespace ObjectViewer.Views
         public Notifiable<UIWin> WindowType { get; set; } = new Notifiable<UIWin>();
         public Notifiable<UIMove> MoveType { get; set; } = new Notifiable<UIMove>();
 
-        public WindowView(IComponentContext componentContext) : base(componentContext)
+        public WindowViewExperiment(IComponentContext componentContext) : base(componentContext)
         {
         }
         public override void Initialise()

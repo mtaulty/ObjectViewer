@@ -37,16 +37,19 @@ namespace ObjectViewer.ViewModels
         {
             var builder = new ContainerBuilder();
             builder.RegisterType<PlatformService>().As<IPlatformService>().SingleInstance();
-            builder.RegisterType<WindowView>().AsSelf();
+            builder.RegisterType<WindowViewExperiment>().AsSelf();
             builder.RegisterType<ButtonView>().AsSelf();
-            builder.RegisterType<WindowViewModel>().Named<object>(nameof(WindowViewModel));
+            builder.RegisterType<WindowViewExperimentModel>().Named<object>(nameof(WindowViewExperimentModel));
+            builder.RegisterType<FloorView>().AsSelf();
+            builder.RegisterType<FloorViewModel>().AsSelf();
             container = builder.Build();
         }
         static void Draw()
         {
             var views = new View[]
             {
-                container.Resolve<WindowView>()
+                container.Resolve<WindowViewExperiment>(),
+                container.Resolve<FloorView>()
             };
 
             views.ForAll(d => d.InitialiseResources());
