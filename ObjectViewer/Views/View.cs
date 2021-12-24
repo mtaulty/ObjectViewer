@@ -1,27 +1,55 @@
 ﻿using Autofac;
 using ObjectViewer.BindingFramework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using Windows.UI.Xaml;
 
 namespace ObjectViewer.Views
 {
-    class View : IDrawable
+    internal abstract class View
     {
         [BindingHidden]
         public Notifiable<object> ViewModel { get; }
 
+        protected string ViewHierarchyPath => this.viewHierarchyPath;
+        protected void AddToViewHierarchyPath(string hierarchyPathAddition)
+        {
+            this.viewHierarchyPath = $"{this.viewHierarchyPath}{hierarchyPathAddition}{hierarchyPathSeparator}";
+        }
+
+        protected IComponentContext ComponentContext => this.componentContext;
+
+        protected List<IBinding> Bindings { get; set; }
+
         public View(IComponentContext componentContext)
         {
-            this.bindings = new List<IBinding>();
+            this.viewHierarchyPath = string.Empty;
+            this.componentContext = componentContext;
+            this.Bindings = new List<IBinding>();
             this.ViewModel = new Notifiable<object>();
             this.ViewModel.Changed += this.OnViewModelChanged;
-            this.ViewModel.SetValue(componentContext.ResolveNamed(this.ViewModelName, typeof(object)));
+            this.Initialise();
+            this.ViewModel.SetValue(this.LocateDirectViewModel());
         }
-        protected string ViewModelName => this.GetType().Name + "Model";
+        public virtual void Initialise()
+        {
+        }
+        public virtual void InitialiseResources()
+        {
+        }
+        public abstract void Draw();
+        protected virtual string ViewModelName => this.GetType().Name + "Model";
 
-        void OnViewModelChanged(object sender, ChangeNotificationEventArgs<object> e)
+        protected virtual object LocateDirectViewModel()
+        {
+            object viewModel = null;
+
+            if (componentContext.IsRegisteredWithName<object>(this.ViewModelName))
+            {
+                viewModel = this.componentContext.ResolveNamed<object>(this.ViewModelName);
+            }
+            return (viewModel);
+        }
+        protected virtual void OnViewModelChanged(object sender, ChangeNotificationEventArgs<object> e)
         {
             if (e.OldValue != null)
             {
@@ -32,65 +60,36 @@ namespace ObjectViewer.Views
                 this.CreateBindings();
             }
         }
-        static IEnumerable<PropertyInfo> NotifiableProperties(Type type)
+        protected virtual void CreateBindings()
         {
-            return (type.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .Where(
-                    p => p.PropertyType.IsGenericType &&
-                    (p.GetCustomAttribute(typeof(BindingHiddenAttribute)) == null) &&
-                    (p.PropertyType.GetGenericTypeDefinition() == typeof(Notifiable<>))));
-        }
-        protected void CreateBindings()
-        {
-            var viewProperties = NotifiableProperties(this.GetType()).Select(
-                p => new
-                {
-                    p.Name,
-                    p.PropertyType,
-                    Value = p.GetValue(this),
-                    GenericArgumentTypes = new[] { p.PropertyType.GetGenericArguments().First() }
-                }
-            );
-            var viewModelProperties = NotifiableProperties(this.ViewModel.Value.GetType()).Select(
-                p => new
-                {
-                    p.Name,
-                    p.PropertyType,
-                    Value = p.GetValue(this.ViewModel.Value)
-                }
-            );
-            foreach (var viewProperty in viewProperties)
+            if (this.ViewModel?.Value != null)
             {
-                var viewModelProperty =
-                    viewModelProperties.FirstOrDefault(vm => ((vm.Name == viewProperty.Name) && (vm.PropertyType == viewProperty.PropertyType)));
-
-                if (viewModelProperty != null)
+                foreach (var binding in BindingFactory.CreateViewViewModelBindings(this, this.viewHierarchyPath, this.ViewModel.Value))
                 {
-                    var genericType = typeof(Binding<>).MakeGenericType(viewProperty.GenericArgumentTypes);
-
-                    var binding = Activator.CreateInstance(genericType, viewProperty.Value, viewModelProperty.Value) as IBinding;
-
-                    binding.AddHandlers();
+                    this.Bindings.Add(binding);
                     binding.ViewModelToView();
-                    this.bindings.Add(binding);
                 }
             }
         }
-        void ClearBindings()
+        protected virtual void ClearBindings()
         {
-            foreach (var binding in this.bindings)
+            foreach (var binding in this.Bindings)
             {
                 binding.RemoveHandlers();
             }
-            this.bindings.Clear();
+            this.Bindings.Clear();
         }
-        public virtual void Initialise()
+        /// <summary>
+        /// Static method which gets me around CS1540 - trying to access protected virtual methods from
+        /// a derived class via a Base class reference.
+        protected static void AddToViewHierarchyPath(View view, string path)
         {
+            view.AddToViewHierarchyPath(path);
         }
-        public virtual void Draw()
-        {
-        }
+        protected static string GetViewHierarchyPath(View view) => view.ViewHierarchyPath;
 
-        List<IBinding> bindings;
+        IComponentContext componentContext;
+        string viewHierarchyPath;
+        static readonly string hierarchyPathSeparator = "/";
     }
 }

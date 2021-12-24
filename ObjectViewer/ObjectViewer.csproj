@@ -71,22 +71,27 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BindingFramework\Attributes\BindsAttribute.cs" />
     <Compile Include="BindingFramework\Binding.cs" />
-    <Compile Include="BindingFramework\BindingHiddenAttribute.cs" />
+    <Compile Include="BindingFramework\BindingFactory.cs" />
+    <Compile Include="BindingFramework\Attributes\BindingHiddenAttribute.cs" />
+    <Compile Include="BindingFramework\Attributes\BindsAsAttribute.cs" />
+    <Compile Include="BindingFramework\Attributes\BindsToAttribute.cs" />
     <Compile Include="BindingFramework\ChangeNotificationEventArgs.cs" />
     <Compile Include="Extensions\ForAll.cs" />
-    <Compile Include="Interfaces\IDrawable.cs" />
     <Compile Include="Services\Definitions\IPlatformService.cs" />
     <Compile Include="Services\Implementation\PlatformService.cs" />
     <Compile Include="ViewModels\FloorViewModel.cs" />
-    <Compile Include="Views\CubeView.cs" />
+    <Compile Include="ViewModels\WindowViewExperimentModel.cs" />
+    <Compile Include="Views\ButtonView.cs" />
+    <Compile Include="Views\ContainerView.cs" />
     <Compile Include="Views\FloorView.cs" />
     <Compile Include="BindingFramework\IBinding.cs" />
     <Compile Include="BindingFramework\Notifiable.cs" />
-    <Compile Include="ViewModels\CubeViewModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Views\View.cs" />
+    <Compile Include="Views\WindowViewExperiment.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
