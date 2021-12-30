@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using ObjectViewer.BindingFramework;
+using ObjectViewer.ViewFramework;
 using StereoKit;
 
 namespace ObjectViewer.Views
@@ -11,6 +12,9 @@ namespace ObjectViewer.Views
         public Notifiable<Vec2> Size { get; set; } = new Notifiable<Vec2>();
         public Notifiable<UIWin> WindowType { get; set; } = new Notifiable<UIWin>();
         public Notifiable<UIMove> MoveType { get; set; } = new Notifiable<UIMove>();
+
+        public ButtonView OkButton { get; set; }
+        public ButtonView CancelButton { get; set; }
 
         public WindowViewExperiment(IComponentContext componentContext) : base(componentContext)
         {

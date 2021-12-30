@@ -1,9 +1,8 @@
 ﻿using Autofac;
 using ObjectViewer.BindingFramework;
 using System.Collections.Generic;
-using Windows.UI.Xaml;
 
-namespace ObjectViewer.Views
+namespace ObjectViewer.ViewFramework
 {
     internal abstract class View
     {
@@ -28,7 +27,7 @@ namespace ObjectViewer.Views
             this.ViewModel = new Notifiable<object>();
             this.ViewModel.Changed += this.OnViewModelChanged;
             this.Initialise();
-            this.ViewModel.SetValue(this.LocateDirectViewModel());
+            this.ViewModel.SetValue(this.LocateViewModel());
         }
         public virtual void Initialise()
         {
@@ -39,7 +38,7 @@ namespace ObjectViewer.Views
         public abstract void Draw();
         protected virtual string ViewModelName => this.GetType().Name + "Model";
 
-        protected virtual object LocateDirectViewModel()
+        protected virtual object LocateViewModel()
         {
             object viewModel = null;
 
@@ -86,6 +85,9 @@ namespace ObjectViewer.Views
         {
             view.AddToViewHierarchyPath(path);
         }
+        /// <summary>
+        /// Same deal - static method which gets me around CS1540
+        /// </summary>
         protected static string GetViewHierarchyPath(View view) => view.ViewHierarchyPath;
 
         IComponentContext componentContext;

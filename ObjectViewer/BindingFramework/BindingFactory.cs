@@ -1,4 +1,5 @@
 ﻿using ObjectViewer.BindingFramework.Attributes;
+using ObjectViewer.ViewFramework;
 using ObjectViewer.Views;
 using System;
 using System.Collections.Generic;

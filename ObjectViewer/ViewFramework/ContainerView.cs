@@ -4,7 +4,7 @@ using ObjectViewer.Extensions;
 using System;
 using System.Collections.Generic;
 
-namespace ObjectViewer.Views
+namespace ObjectViewer.ViewFramework
 {
     internal abstract class ContainerView : View
     {

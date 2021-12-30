@@ -2,6 +2,7 @@ using Autofac;
 using ObjectViewer.Extensions;
 using ObjectViewer.Services.Definitions;
 using ObjectViewer.Services.Implementation;
+using ObjectViewer.ViewFramework;
 using ObjectViewer.Views;
 using StereoKit;
 using System;
