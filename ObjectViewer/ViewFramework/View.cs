@@ -1,69 +1,58 @@
 ﻿using Autofac;
 using ObjectViewer.BindingFramework;
+using ObjectViewer.ViewModels;
 using System.Collections.Generic;
 
 namespace ObjectViewer.ViewFramework
 {
     internal abstract class View
     {
-        [BindingHidden]
-        public Notifiable<object> ViewModel { get; }
-
-        protected string ViewHierarchyPath => this.viewHierarchyPath;
-        protected void AddToViewHierarchyPath(string hierarchyPathAddition)
+        public View(IComponentContext componentContext, IViewModelLocator viewModelLocator)
         {
-            this.viewHierarchyPath = $"{this.viewHierarchyPath}{hierarchyPathAddition}{hierarchyPathSeparator}";
-        }
-
-        protected IComponentContext ComponentContext => this.componentContext;
-
-        protected List<IBinding> Bindings { get; set; }
-
-        public View(IComponentContext componentContext)
-        {
-            this.viewHierarchyPath = string.Empty;
-            this.componentContext = componentContext;
+            this.ComponentContext = componentContext;
+            this.ViewModelLocator = viewModelLocator;
             this.Bindings = new List<IBinding>();
-            this.ViewModel = new Notifiable<object>();
-            this.ViewModel.Changed += this.OnViewModelChanged;
-            this.Initialise();
-            this.ViewModel.SetValue(this.LocateViewModel());
+            this.possibleViewModelNames.Add(this.GetType().Name + "Model");
         }
-        public virtual void Initialise()
+        protected IViewModelLocator ViewModelLocator { get; private set; }
+        protected IComponentContext ComponentContext { get; private set; }
+
+        public void AddPreferredViewModelName(string viewModelName)
         {
+            this.possibleViewModelNames.Insert(0, viewModelName);
+        }
+        public virtual void InitialiseViewModelAndBind(IViewModelLocator overrideLocator = null)
+        {
+            var locator = overrideLocator ?? this.ViewModelLocator;
+
+            foreach (var viewModelName in this.possibleViewModelNames)
+            {
+                if (locator.HasViewModel(viewModelName))
+                {
+                    this.viewModel = locator.GetViewModelInstance(viewModelName);
+                    this.CreateBindings();
+                    break;
+                }
+            }
         }
         public virtual void InitialiseResources()
         {
         }
         public abstract void Draw();
-        protected virtual string ViewModelName => this.GetType().Name + "Model";
 
-        protected virtual object LocateViewModel()
-        {
-            object viewModel = null;
-
-            if (componentContext.IsRegisteredWithName<object>(this.ViewModelName))
-            {
-                viewModel = this.componentContext.ResolveNamed<object>(this.ViewModelName);
-            }
-            return (viewModel);
-        }
         protected virtual void OnViewModelChanged(object sender, ChangeNotificationEventArgs<object> e)
         {
             if (e.OldValue != null)
             {
                 this.ClearBindings();
             }
-            if (this.ViewModel.Value != null)
-            {
-                this.CreateBindings();
-            }
+            this.CreateBindings();
         }
         protected virtual void CreateBindings()
         {
-            if (this.ViewModel?.Value != null)
+            if (this.viewModel != null)
             {
-                foreach (var binding in BindingFactory.CreateViewViewModelBindings(this, this.viewHierarchyPath, this.ViewModel.Value))
+                foreach (var binding in BindingFactory.CreateViewViewModelBindings(this, this.viewModel))
                 {
                     this.Bindings.Add(binding);
                     binding.ViewModelToView();
@@ -78,20 +67,8 @@ namespace ObjectViewer.ViewFramework
             }
             this.Bindings.Clear();
         }
-        /// <summary>
-        /// Static method which gets me around CS1540 - trying to access protected virtual methods from
-        /// a derived class via a Base class reference.
-        protected static void AddToViewHierarchyPath(View view, string path)
-        {
-            view.AddToViewHierarchyPath(path);
-        }
-        /// <summary>
-        /// Same deal - static method which gets me around CS1540
-        /// </summary>
-        protected static string GetViewHierarchyPath(View view) => view.ViewHierarchyPath;
-
-        IComponentContext componentContext;
-        string viewHierarchyPath;
-        static readonly string hierarchyPathSeparator = "/";
+        List<IBinding> Bindings { get; set; }
+        List<string> possibleViewModelNames;
+        object viewModel;
     }
 }

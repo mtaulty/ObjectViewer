@@ -1,34 +1,43 @@
 ﻿using Autofac;
 using ObjectViewer.BindingFramework;
 using ObjectViewer.Extensions;
+using ObjectViewer.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace ObjectViewer.ViewFramework
 {
-    internal abstract class ContainerView : View
+    internal abstract class ContainerView : View, IViewModelLocator
     {
-        protected List<View> Children { get; set; }
+        public ContainerView(IComponentContext componentContext, IViewModelLocator viewModelLocator) : base(componentContext, viewModelLocator)
+        {
+        }
+        public override void InitialiseViewModelAndBind(IViewModelLocator viewModelLocator = null)
+        {
+            // We bind any properties that we have which are public and of type Notifiable<T>
+            base.InitialiseViewModelAndBind();
 
-        public ContainerView(IComponentContext componentContext) : base(componentContext)
-        {
-        }
-        protected virtual void AddChildView(string viewName, View view)
-        {
-            if (this.Children == null)
-            {
-                this.Children = new List<View>();
-            }
-            if (this.Bindings.Count > 0)
-            {
-                throw new InvalidOperationException("Cannot add children post binding (right now)");
-            }
-            View.AddToViewHierarchyPath(view, viewName);
-            this.Children.Add(view);
-        }
-        public override void Initialise()
-        {
-            this.Children.ForAll(child => child.Initialise());
+            // We want to find all the child properties we have that are of type View.
+            this.ChildViewProperties.ForAll(
+                property =>
+                {
+                    // Instantiate it and set the value in the property.
+                    var childView = (View)base.ComponentContext.Resolve(property.PropertyType);
+                    property.SetValue(this, childView);
+
+                    childView.AddPreferredViewModelName(property.Name);
+                    
+                    var viewBindingName = BindingFactory.GetBindingName<BindsAsAttribute>(property);
+
+                    if (viewBindingName != property.Name)
+                    {
+                        childView.AddPreferredViewModelName(viewBindingName);
+                    }
+                    childView.InitialiseViewModelAndBind(this);
+                }
+            );
         }
         protected abstract void BeginDraw();
         protected abstract void EndDraw();
@@ -36,31 +45,26 @@ namespace ObjectViewer.ViewFramework
         {
             this.BeginDraw();
 
-            this.Children.ForAll(
-                child =>
-                {
-                    child.Draw();
-                }
-            );
+            this.ForAllChildViews(view => view.Draw());
+
             this.EndDraw();
         }
-        protected override void CreateBindings()
+        protected void ForAllChildViews(Action<View> action)
         {
-            // Create all the bindings that are straight from the properties of this view
-            // to some viewmodel.
-            base.CreateBindings();
-
-            // Now look at the children of this view and see if we can bind them up.
-            this.Children.ForAll(
-                child => 
-                {
-                    foreach (var binding in BindingFactory.CreateViewViewModelBindings(child, View.GetViewHierarchyPath(child), this.ViewModel.Value))
-                    {
-                        this.Bindings.Add(binding);
-                        binding.ViewModelToView();
-                    }
-                }
-            );
+            this.ChildViewProperties.ForAll(p => action(p.GetValue(this) as View));
         }
+        public bool HasViewModel(string viewModelName)
+        {
+            // Do we have a property with a "BindsTo" attribute of this name?
+            // Do we have a property with this name?
+            // Does our view model locator have a view model with this name?
+            throw new NotImplementedException();
+        }
+        public object GetViewModelInstance(string viewModelName)
+        {
+            throw new NotImplementedException();
+        }
+        protected IEnumerable<PropertyInfo> ChildViewProperties => 
+            this.GetType().GetProperties().Where(p => p.PropertyType.IsSubclassOf(typeof(View)));
     }
 }

@@ -81,7 +81,10 @@
     <Compile Include="Extensions\ForAll.cs" />
     <Compile Include="Services\Definitions\IPlatformService.cs" />
     <Compile Include="Services\Implementation\PlatformService.cs" />
+    <Compile Include="ViewModels\ButtonViewModel.cs" />
     <Compile Include="ViewModels\FloorViewModel.cs" />
+    <Compile Include="ViewModels\IViewModelLocator.cs" />
+    <Compile Include="ViewModels\ComponentContextViewModelLocator.cs" />
     <Compile Include="ViewModels\WindowViewExperimentModel.cs" />
     <Compile Include="Views\ButtonView.cs" />
     <Compile Include="ViewFramework\ContainerView.cs" />

@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using ObjectViewer.BindingFramework;
 using ObjectViewer.ViewFramework;
+using ObjectViewer.ViewModels;
 using StereoKit;
 
 namespace ObjectViewer.Views
@@ -16,14 +17,8 @@ namespace ObjectViewer.Views
         public ButtonView OkButton { get; set; }
         public ButtonView CancelButton { get; set; }
 
-        public WindowViewExperiment(IComponentContext componentContext) : base(componentContext)
+        public WindowViewExperiment(IComponentContext componentContext, IViewModelLocator viewModelLocator) : base(componentContext, viewModelLocator)
         {
-        }
-        public override void Initialise()
-        {
-            base.AddChildView("OKBtn", base.ComponentContext.Resolve<ButtonView>());
-            base.AddChildView("CancelBtn", base.ComponentContext.Resolve<ButtonView>());
-            base.Initialise();
         }
         protected override void BeginDraw()
         {
