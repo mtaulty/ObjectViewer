@@ -11,23 +11,7 @@ namespace ObjectViewer.ViewModels
         public Notifiable<UIWin> WindowType { get; set; } = new Notifiable<UIWin>();
         public Notifiable<UIMove> MoveType { get; set; } = new Notifiable<UIMove>();
 
-        [BindsTo("OKBtn/Text")]
-        public Notifiable<string> OkButtonText { get; set; } = new Notifiable<string>();
-
-        [BindsTo("OKBtn/Size")]
-        public Notifiable<Vec2> OkButtonSize { get; set; } = new Notifiable<Vec2>();
-
-        [BindsTo("OKBtn/Position")]
-        public Notifiable<Vec3> OkButtonPosition { get; set; } = new Notifiable<Vec3>();
-
-        [BindsTo("CancelBtn/Text")]
-        public Notifiable<string> CancelButtonText { get; set; } = new Notifiable<string>();
-
-        [BindsTo("CancelBtn/Size")]
-        public Notifiable<Vec2> CancelButtonSize { get; set; } = new Notifiable<Vec2>();
-
-        [BindsTo("CancelBtn/Position")]
-        public Notifiable<Vec3> CancelButtonPosition { get; set; } = new Notifiable<Vec3>();
+        public ButtonViewModel OkButton { get; set; } = new ButtonViewModel();
 
         public WindowViewExperimentModel()
         {
@@ -37,13 +21,9 @@ namespace ObjectViewer.ViewModels
             this.WindowType.SetValue(UIWin.Normal);
             this.MoveType.SetValue(UIMove.FaceUser);
 
-            this.OkButtonText.SetValue("OK");
-            this.OkButtonSize.SetValue(new Vec2(0.2f, 0.1f));
-            this.OkButtonPosition.SetValue(new Vec3(0, 0, 0));
-
-            this.CancelButtonText.SetValue("Cancel");
-            this.CancelButtonSize.SetValue(new Vec2(0.2f, 0.1f));
-            this.CancelButtonPosition.SetValue(new Vec3(0.25f, 0, 0));
+            this.OkButton.Text.SetValue("OK");
+            this.OkButton.Size.SetValue(new Vec2(0.2f, 0.1f));
+            this.OkButton.Position.SetValue(new Vec3(0, 0, 0));
         }
     }
 }

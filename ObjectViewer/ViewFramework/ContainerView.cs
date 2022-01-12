@@ -11,6 +11,13 @@ namespace ObjectViewer.ViewFramework
 {
     internal abstract class ContainerView : View, IViewModelLocator
     {
+        enum ViewModelSource
+        {
+            None,
+            DirectProperty,
+            IndirectProperty,
+            ViewModelLocator
+        }
         public ContainerView(IComponentContext componentContext, IViewModelLocator viewModelLocator) : base(componentContext, viewModelLocator)
         {
         }
@@ -55,16 +62,62 @@ namespace ObjectViewer.ViewFramework
         }
         public bool HasViewModel(string viewModelName)
         {
-            // Do we have a property with a "BindsTo" attribute of this name?
-            // Do we have a property with this name?
-            // Does our view model locator have a view model with this name?
-            throw new NotImplementedException();
+            if (this.viewModelSource == ViewModelSource.None)
+            {
+                this.viewModelSource = ViewModelSource.None;
+
+                // Do we have a property with this name? Question - should this be notifiable itself or
+                // not? Haven't gone there yet!
+                if (base.ViewModelHasPropertyNamed(viewModelName))
+                {
+                    this.viewModelSource = ViewModelSource.DirectProperty;
+                }
+
+                // Do we have a public property with a "BindsTo" attribute of this name?
+                if ((this.viewModelSource == ViewModelSource.None) &&
+                    (base.ViewModelHasPropertyWhichBindsTo(viewModelName)))
+                {
+                    this.viewModelSource = ViewModelSource.IndirectProperty;
+                }
+
+                // Does our view model locator have a view model with this name?
+                if ((this.viewModelSource == ViewModelSource.None) &&
+                    (this.ViewModelLocator.HasViewModel(viewModelName)))
+                {
+                    this.viewModelSource = ViewModelSource.ViewModelLocator;
+                }
+            }
+            return (this.viewModelSource != ViewModelSource.None);
         }
         public object GetViewModelInstance(string viewModelName)
         {
-            throw new NotImplementedException();
+            object viewModel = null;
+
+            if (!this.HasViewModel(viewModelName))
+            {
+                throw new InvalidOperationException("No view model to obtain");
+            }
+
+            switch (this.viewModelSource)
+            {
+                case ViewModelSource.DirectProperty:
+                    viewModel = base.GetViewModelPropertyValue(viewModelName);
+                    break;
+                case ViewModelSource.IndirectProperty:
+                    viewModel = base.GetViewModelPropertyValue(base.GetViewModelPropertyWhichBindsTo(viewModelName).Name);
+                    break;
+                case ViewModelSource.ViewModelLocator:
+                    viewModel = this.ViewModelLocator.GetViewModelInstance(viewModelName);
+                    break;
+                default:
+                    break;
+            }
+            return (viewModel);
         }
         protected IEnumerable<PropertyInfo> ChildViewProperties => 
             this.GetType().GetProperties().Where(p => p.PropertyType.IsSubclassOf(typeof(View)));
+
+
+        ViewModelSource viewModelSource = ViewModelSource.None;
     }
 }

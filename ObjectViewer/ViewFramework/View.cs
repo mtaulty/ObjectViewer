@@ -2,6 +2,8 @@
 using ObjectViewer.BindingFramework;
 using ObjectViewer.ViewModels;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace ObjectViewer.ViewFramework
 {
@@ -12,6 +14,7 @@ namespace ObjectViewer.ViewFramework
             this.ComponentContext = componentContext;
             this.ViewModelLocator = viewModelLocator;
             this.Bindings = new List<IBinding>();
+            this.possibleViewModelNames = new List<string>();
             this.possibleViewModelNames.Add(this.GetType().Name + "Model");
         }
         protected IViewModelLocator ViewModelLocator { get; private set; }
@@ -67,6 +70,32 @@ namespace ObjectViewer.ViewFramework
             }
             this.Bindings.Clear();
         }
+        protected bool ViewModelHasPropertyNamed(string propertyName)
+        {
+            return (this.viewModel?.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance) != null);
+        }
+        protected bool ViewModelHasPropertyWhichBindsTo(string propertyName)
+        {
+            return (this.GetViewModelPropertyWhichBindsTo(propertyName) != null);
+        }
+        protected PropertyInfo GetViewModelPropertyWhichBindsTo(string propertyName)
+        {
+            PropertyInfo propertyInfo = null;
+
+            var properties = this.GetViewModelPublicProperties();
+            if (properties != null)
+            {
+                propertyInfo = properties.FirstOrDefault(p => BindingFactory.GetBindingName<BindsToAttribute>(p) == propertyName);
+            }
+            return (propertyInfo);
+        }
+        protected object GetViewModelPropertyValue(string propertyName)
+        {
+            return (this.viewModel.GetType().GetProperty(propertyName).GetValue(this.viewModel));
+        }
+
+        PropertyInfo[] GetViewModelPublicProperties() => this.viewModel?.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
         List<IBinding> Bindings { get; set; }
         List<string> possibleViewModelNames;
         object viewModel;

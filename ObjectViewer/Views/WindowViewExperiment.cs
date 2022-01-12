@@ -15,7 +15,6 @@ namespace ObjectViewer.Views
         public Notifiable<UIMove> MoveType { get; set; } = new Notifiable<UIMove>();
 
         public ButtonView OkButton { get; set; }
-        public ButtonView CancelButton { get; set; }
 
         public WindowViewExperiment(IComponentContext componentContext, IViewModelLocator viewModelLocator) : base(componentContext, viewModelLocator)
         {
