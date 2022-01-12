@@ -1,5 +1,7 @@
 ﻿using Autofac;
 using ObjectViewer.BindingFramework;
+using ObjectViewer.ViewFramework;
+using ObjectViewer.ViewModels;
 using StereoKit;
 
 namespace ObjectViewer.Views
@@ -12,14 +14,10 @@ namespace ObjectViewer.Views
         public Notifiable<UIWin> WindowType { get; set; } = new Notifiable<UIWin>();
         public Notifiable<UIMove> MoveType { get; set; } = new Notifiable<UIMove>();
 
-        public WindowViewExperiment(IComponentContext componentContext) : base(componentContext)
+        public ButtonView OkButton { get; set; }
+
+        public WindowViewExperiment(IComponentContext componentContext, IViewModelLocator viewModelLocator) : base(componentContext, viewModelLocator)
         {
-        }
-        public override void Initialise()
-        {
-            base.AddChildView("OKBtn", base.ComponentContext.Resolve<ButtonView>());
-            base.AddChildView("CancelBtn", base.ComponentContext.Resolve<ButtonView>());
-            base.Initialise();
         }
         protected override void BeginDraw()
         {

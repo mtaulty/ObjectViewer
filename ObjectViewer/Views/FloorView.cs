@@ -1,5 +1,7 @@
 ﻿using Autofac;
 using ObjectViewer.BindingFramework;
+using ObjectViewer.ViewFramework;
+using ObjectViewer.ViewModels;
 using StereoKit;
 
 namespace ObjectViewer.Views
@@ -8,11 +10,13 @@ namespace ObjectViewer.Views
     {
         public Notifiable<bool> DrawFloor { get; set; } = new Notifiable<bool>();
 
-        public FloorView(IComponentContext componentContext) : base(componentContext)
+        public FloorView(IComponentContext componentContext, IViewModelLocator viewModelLocator) : base(componentContext, viewModelLocator)
         {
         }
-        public override void Initialise()
+        public override void InitialiseResources()
         {
+            base.InitialiseResources();
+
             if (this.DrawFloor.Value)
             {
                 this.floorTransform = Matrix.TS(0, -1.5f, 0, new Vec3(30, 0.1f, 30));

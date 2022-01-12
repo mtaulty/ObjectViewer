@@ -1,9 +1,10 @@
 ﻿using ObjectViewer.BindingFramework.Attributes;
-using ObjectViewer.Views;
+using ObjectViewer.ViewFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Windows.Devices.Enumeration.Pnp;
 
 namespace ObjectViewer.BindingFramework
 {
@@ -17,16 +18,7 @@ namespace ObjectViewer.BindingFramework
                     (p.GetCustomAttribute(typeof(BindingHiddenAttribute)) == null) &&
                     (p.PropertyType.GetGenericTypeDefinition() == typeof(Notifiable<>))));
         }
-        static IEnumerable<PropertyInfo> NotifiablePropertiesMatchingHierarchyPath(Type type, string hierarchyPath)
-        {
-            return (type.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                .Where(
-                    p => p.PropertyType.IsGenericType &&
-                    (p.GetCustomAttribute(typeof(BindingHiddenAttribute)) == null) &&
-                    (p.PropertyType.GetGenericTypeDefinition() == typeof(Notifiable<>)) &&
-                    (GetBindsToName(p).StartsWith(hierarchyPath))));
-        }
-        static string GetBindingName<T>(PropertyInfo p) where T : BindsAttribute
+        public static string GetBindingName<T>(PropertyInfo p) where T : BindsAttribute
         {
             var propertyName = p.Name;
             var bindsAsAttribute = p.GetCustomAttribute<T>();
@@ -40,19 +32,18 @@ namespace ObjectViewer.BindingFramework
         static string GetBindsToName(PropertyInfo p) => GetBindingName<BindsToAttribute>(p);
         static string GetBindsAsName(PropertyInfo p) => GetBindingName<BindsAsAttribute>(p);
 
-        public static IEnumerable<IBinding> CreateViewViewModelBindings(
-            View view, string hierarchyPath, object viewModel)
+        public static IEnumerable<IBinding> CreateViewViewModelBindings(View view, object viewModel)
         {
             var viewProperties = NotifiableProperties(view.GetType()).Select(
                 p => new
                 {
-                    Name = hierarchyPath + GetBindsAsName(p),
+                    Name = GetBindsAsName(p),
                     p.PropertyType,
                     Value = p.GetValue(view),
                     GenericArgumentTypes = new[] { p.PropertyType.GetGenericArguments().First() }
                 }
             );
-            var viewModelProperties = NotifiablePropertiesMatchingHierarchyPath(viewModel.GetType(), hierarchyPath).Select(
+            var viewModelProperties = NotifiableProperties(viewModel.GetType()).Select(
                 p => new
                 {
                     Name = GetBindsToName(p),

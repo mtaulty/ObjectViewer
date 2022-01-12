@@ -2,6 +2,7 @@ using Autofac;
 using ObjectViewer.Extensions;
 using ObjectViewer.Services.Definitions;
 using ObjectViewer.Services.Implementation;
+using ObjectViewer.ViewFramework;
 using ObjectViewer.Views;
 using StereoKit;
 using System;
@@ -36,6 +37,7 @@ namespace ObjectViewer.ViewModels
         static void ContainerInitialise()
         {
             var builder = new ContainerBuilder();
+            builder.RegisterType<ComponentContextViewModelLocator>().As<IViewModelLocator>();
             builder.RegisterType<PlatformService>().As<IPlatformService>().SingleInstance();
             builder.RegisterType<WindowViewExperiment>().AsSelf();
             builder.RegisterType<ButtonView>().AsSelf();
@@ -52,9 +54,11 @@ namespace ObjectViewer.ViewModels
                 container.Resolve<FloorView>()
             };
 
-            views.ForAll(d => d.InitialiseResources());
+            views.ForAll(v => v.InitialiseViewModelAndBind());
 
-            while (SK.Step(() => views.ForAll(d => d.Draw()))) ;
+            views.ForAll(v => v.InitialiseResources());
+
+            while (SK.Step(() => views.ForAll(v => v.Draw()))) ;
         }
         static IContainer container;
     }
